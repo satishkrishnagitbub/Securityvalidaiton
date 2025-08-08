@@ -1,0 +1,30 @@
+services:
+  app:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    ports:
+      - "6000:5000"
+    command: sh -c "bundle install && rm -f tmp/pids/server.pid && bin/rails s -b 0.0.0.0 -p 5000"
+    stdin_open: true
+    tty: true
+    depends_on:
+      - db
+    volumes:
+      - .:/app
+      - bundle:/app/vendor/bundle
+  db:
+    image: mysql:8.4.1
+    command: --mysql-native-password=ON
+    ports:
+      - '3307:3307'
+    environment:
+      MYSQL_ALLOW_EMPTY_PASSWORD: 'yes'
+    volumes:
+      - mysql-data:/var/lib/mysql
+
+volumes:
+  mysql-data:
+    driver: local
+  bundle:
+    driver: local
